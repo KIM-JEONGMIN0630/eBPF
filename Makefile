@@ -29,7 +29,7 @@ procmon.skel.h: procmon.bpf.o
 filemon.skel.h: filemon.bpf.o
 	bpftool gen skeleton $< > $@
 
-# 최종 실행파일
+# 최종 
 monitor: main.c tcpmon.skel.h procmon.skel.h filemon.skel.h
 	gcc -g -O2 -o $@ main.c -lbpf -lelf -lz
 
