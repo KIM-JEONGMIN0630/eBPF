@@ -52,28 +52,27 @@ int main() {
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
 
-    // 1. tcpmon
+    // tcpmon
     tcpmon_skel = tcpmon_bpf__open();
     if (!tcpmon_skel || tcpmon_bpf__load(tcpmon_skel) || tcpmon_bpf__attach(tcpmon_skel)) {
         fprintf(stderr, "Failed to init tcpmon\n");
         return 1;
     }
 
-    // 2. procmon
+    // procmon
     procmon_skel = procmon_bpf__open();
     if (!procmon_skel || procmon_bpf__load(procmon_skel) || procmon_bpf__attach(procmon_skel)) {
         fprintf(stderr, "Failed to init procmon\n");
         return 1;
     }
 
-    // 3. filemon
+    // ;;;;;ㅔ;;ㅔㅔ;ㅔ;;ㅔㅔ;ㅔㅔㅔ;ㅔㅔ;0''filemon
     filemon_skel = filemon_bpf__open();
     if (!filemon_skel || filemon_bpf__load(filemon_skel) || filemon_bpf__attach(filemon_skel)) {
         fprintf(stderr, "Failed to init filemon\n");
         return 1;
     }
 
-    // 4. ring buffer 등록
     rb = ring_buffer__new(bpf_map__fd(tcpmon_skel->maps.events), handle_event, NULL, NULL);
     ring_buffer__add(rb, bpf_map__fd(procmon_skel->maps.events), handle_event, NULL);
     ring_buffer__add(rb, bpf_map__fd(filemon_skel->maps.events), handle_event, NULL);
@@ -83,11 +82,8 @@ int main() {
         return 1;
     }
 
-    // 5. 이벤트 수집 루프
     while (!exiting)
         ring_buffer__poll(rb, 100);
-
-    // 6. 정리
     ring_buffer__free(rb);
     tcpmon_bpf__destroy(tcpmon_skel);
     procmon_bpf__destroy(procmon_skel);
